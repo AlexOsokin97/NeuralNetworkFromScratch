@@ -1,8 +1,10 @@
+import numpy as np
 from nnfs.datasets import spiral_data
 from layer.Layer_Dense import Layer_Dense
 from activation.ReLU import Relu
 from activation.Softmax import Softmax
 from loss.CategoricalCrossEntropy import CategoricalCrossEntropy
+from accuracy.Accuracy import Accuracy
 
 
 def main() -> None:
@@ -14,10 +16,9 @@ def main() -> None:
     relu = Relu()
     sm = Softmax()
     loss_func = CategoricalCrossEntropy()
+    accuracy = Accuracy()
 
-    output = layer1.forward(X)
-    relu.activate(output)
-    sm.activate(layer2.forward(relu.output))
+    relu.activate(layer1.forward(X))
     sm.activate(layer2.forward(relu.output))
 
     loss = loss_func.calculate(sm.probabilities, y)

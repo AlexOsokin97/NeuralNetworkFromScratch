@@ -6,13 +6,15 @@ from numpy import ndarray
 
 @dataclass
 class Loss(ABC):
-    """Parent abstract class which contains methods that are used in every loss calculating child class"""
+    """Abstract class which every loss type class would inherit its methods from"""
 
     def calculate(self, output, y) -> ndarray:
-        sample_losses = self.forward(output, y)
+        """data loss calculation method"""
+        sample_losses = self.loss_forward(output, y)
         data_loss = np.mean(sample_losses)
         return data_loss
 
     @abstractmethod
-    def forward(self, output, y) -> ndarray:
+    def loss_forward(self, output, y) -> ndarray:
+        """A method which returns a ndarray of losses for each sample"""
         pass

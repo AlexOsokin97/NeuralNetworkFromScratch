@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Layer_Dense:
+    """Fully connected layer class"""
 
     __num_inputs: int
     __num_neurons: int

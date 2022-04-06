@@ -8,9 +8,7 @@ from loss.Loss import Loss
 @dataclass
 class CategoricalCrossEntropy(Loss):
 
-    __loss: float = field(init=False)
-
-    def forward(self, y_hat, y_true) -> ndarray:
+    def loss_forward(self, y_hat: ndarray, y_true: ndarray) -> ndarray:
         # How many samples there are (rows)
         samples = len(y_hat)
         # Clipping the predicted values between 1e-7 (close to zero) in order
@@ -29,12 +27,3 @@ class CategoricalCrossEntropy(Loss):
 
         neg_log_likelihoods = -np.log(correct_confidences)
         return neg_log_likelihoods
-
-
-    @property
-    def loss(self):
-        return self.__loss
-
-    @loss.setter
-    def loss(self, new_loss):
-        self.__loss = new_loss
