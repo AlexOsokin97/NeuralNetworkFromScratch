@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import ndarray
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -11,19 +11,23 @@ class Layer_Dense:
     __num_neurons: int
     __bias_zero: bool
     __weight_init_scaler: int | float = 0.01
-    __weights: ndarray = None
-    __biases: ndarray = None
+    __weights: ndarray = field(init=False)
+    __biases: ndarray = field(init=False)
+    __inputs: ndarray = field(init=False)
+    __dweights: ndarray = field(init=False)
+    __dinputs: ndarray = field(init=False)
+    __dbiases: ndarray = field(init=False)
 
     def __post_init__(self) -> None:
-        self.__weights = self.__init_weights(0.01)
-        self.__biases = self.__init_biases()
+        self.weights = self.__init_weights(self.weight_init_scaler)
+        self.biases = self.__init_biases()
 
     def __init_weights(self, scaler: float | int) -> ndarray:
         """Returns a  Gaussian distribution ndarray of weights of
          shape (n_inputs, n_neurons) with mean of 0 and variance of 1"""
 
         if self.__weights is None:
-            weights = scaler * np.random.randn(self.inputs, self.neurons)
+            weights = scaler * np.random.randn(self.num_inputs, self.neurons)
             return weights
         elif self.__weights is not None:
             return self.__weights
@@ -46,11 +50,16 @@ class Layer_Dense:
     def forward(self, data: ndarray) -> ndarray:
         """Returns a ndarray of a dot product between input data and
          weights plus the bias (input * weight + bias)"""
-
+        self.inputs = data
         return np.dot(data, self.weights) + self.biases
 
+    def backward(self, dvalues: ndarray) -> None:
+        self.dweights = np.dot(self.inputs.T, dvalues)
+        self.dinputs = np.dot(self.weights.T, dvalues)
+        self.biases = np.sum(dvalues, axis=0, keepdims=True)
+
     @property
-    def inputs(self) -> int:
+    def num_inputs(self) -> int:
         return self.__num_inputs
 
     @property
@@ -70,7 +79,7 @@ class Layer_Dense:
         return self.__weights
 
     @weights.setter
-    def weights(self, new_weights) -> None:
+    def weights(self, new_weights: ndarray) -> None:
         self.__weights = new_weights
 
     @property
@@ -78,5 +87,37 @@ class Layer_Dense:
         return self.__biases
 
     @biases.setter
-    def biases(self, new_biases) -> None:
+    def biases(self, new_biases: ndarray) -> None:
         self.__biases = new_biases
+
+    @property
+    def inputs(self) -> ndarray:
+        return self.__inputs
+
+    @inputs.setter
+    def inputs(self, new_inputs: ndarray) -> None:
+        self.__inputs = new_inputs
+
+    @property
+    def dweights(self) -> ndarray:
+        return self.__dweights
+
+    @property
+    def dinputs(self) -> ndarray:
+        return self.__dinputs
+
+    @property
+    def dbiases(self) -> ndarray:
+        return self.__dbiases
+
+    @dweights.setter
+    def dweights(self, values: ndarray) -> None:
+        self.__dweights = values
+
+    @dinputs.setter
+    def dinputs(self, values: ndarray) -> None:
+        self.__dinputs = values
+
+    @dbiases.setter
+    def dbiases(self, values: ndarray) -> None:
+        self.__dbiases = values
