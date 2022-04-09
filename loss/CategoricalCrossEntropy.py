@@ -12,7 +12,7 @@ class CategoricalCrossEntropy(Loss):
 
     def loss_forward(self, y_hat: ndarray, y_true: ndarray) -> ndarray:
         """The forward pass of the Categorical Cross Entropy function
-            which returns -log(correct_confidences)"""
+        """
         # How many samples there are (rows)
         samples = len(y_hat)
         # Clipping the predicted values between 1e-7 (close to zero) in order
@@ -37,7 +37,7 @@ class CategoricalCrossEntropy(Loss):
         # Number of samples for normalization
         samples = len(dvalues)
         # Number of labels in each sample (using the first sample)
-        labels = len(dvalues[0])
+        labels = len(dvalues)
         # if labels are sparse, turn them into one hot vector
         if len(y_true.shape) == 1:
             y_true = np.eye(labels)[y_true]
@@ -46,7 +46,7 @@ class CategoricalCrossEntropy(Loss):
         self.dinputs = -y_true / dvalues
 
         # Normalization
-        self.__dinputs = self.dinputs / samples
+        self.dinputs = self.dinputs / samples
 
     @property
     def dinputs(self) -> ndarray:

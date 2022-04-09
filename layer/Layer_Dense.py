@@ -11,47 +11,40 @@ class Layer_Dense:
     __num_neurons: int
     __bias_zero: bool
     __weight_init_scaler: int | float = 0.01
-    __weights: ndarray = field(init=False)
-    __biases: ndarray = field(init=False)
+    __weights: ndarray = None
+    __biases: ndarray = None
     __inputs: ndarray = field(init=False)
+    __outputs: ndarray = field(init=False)
     __dweights: ndarray = field(init=False)
     __dinputs: ndarray = field(init=False)
     __dbiases: ndarray = field(init=False)
 
     def __post_init__(self) -> None:
-        self.weights = self.__init_weights(self.weight_init_scaler)
-        self.biases = self.__init_biases()
+        self.__init_weights(self.weight_init_scaler)
+        self.__init_biases()
 
-    def __init_weights(self, scaler: float | int) -> ndarray:
-        """Returns a  Gaussian distribution ndarray of weights of
+    def __init_weights(self, scaler: float | int) -> None:
+        """sets weights to a  Gaussian distribution ndarray of weights of
          shape (n_inputs, n_neurons) with mean of 0 and variance of 1"""
 
-        if self.__weights is None:
-            weights = scaler * np.random.randn(self.num_inputs, self.neurons)
-            return weights
-        elif self.__weights is not None:
-            return self.__weights
+        if self.weights is None:
+            self.weights = scaler * np.random.randn(self.num_inputs, self.neurons)
 
-    def __init_biases(self) -> ndarray:
-        """Returns a ndarray of biases of shape (1, n_neurons) where each bias equals 0 OR
+    def __init_biases(self) -> None:
+        """sets the biases to a ndarray of biases of shape (1, n_neurons) where each bias equals 0 OR
         a ndarray of Gaussian distribution of biases of shape (1, n_neurons)"""
 
         if self.bias_zero and self.biases is None:
-            biases = np.zeros((1, self.neurons))
-            return biases
+            self.biases = np.zeros((1, self.neurons))
 
         elif not self.bias_zero and self.biases is None:
-            biases = np.random.randn(1, self.neurons)
-            return biases
+            self.biases = np.random.randn(1, self.neurons)
 
-        elif self.biases is not None:
-            return self.biases
-
-    def forward(self, data: ndarray) -> ndarray:
-        """Returns a ndarray of a dot product between input data and
+    def forward(self, data: ndarray) -> None:
+        """sets outputs to a ndarray of dot product between input data and
          weights plus the bias (input * weight + bias)"""
         self.inputs = data
-        return np.dot(data, self.weights) + self.biases
+        self.outputs = np.dot(data, self.weights) + self.biases
 
     def backward(self, dvalues: ndarray) -> None:
         self.dweights = np.dot(self.inputs.T, dvalues)
@@ -97,6 +90,14 @@ class Layer_Dense:
     @inputs.setter
     def inputs(self, new_inputs: ndarray) -> None:
         self.__inputs = new_inputs
+
+    @property
+    def outputs(self) -> ndarray:
+        return self.__outputs
+
+    @outputs.setter
+    def outputs(self, new_outputs: ndarray) -> None:
+        self.__outputs = new_outputs
 
     @property
     def dweights(self) -> ndarray:
