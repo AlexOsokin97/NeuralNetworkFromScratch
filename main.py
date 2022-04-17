@@ -6,6 +6,8 @@ from activation.ReLU import Relu
 from loss.CategoricalCrossEntropy import CategoricalCrossEntropy
 from activation_loss_combo.SoftmaxCategoricalCrossEntropy import SoftmaxCategoricalCrossEntropy
 from accuracy.Accuracy import Accuracy
+from optimizers.SGD import SGD
+
 
 
 def main() -> None:
@@ -21,31 +23,22 @@ def main() -> None:
     softmax = Softmax()
     loss = CategoricalCrossEntropy()
     smcc = SoftmaxCategoricalCrossEntropy()
+    sgd = SGD()
 
-    #layer1.forward(X)
-    #relu.activate(layer1.outputs)
+    layer1.forward(X)
+    relu.activate(layer1.outputs)
 
-    #layer2.forward(relu.output)
-    #relu.activate(layer2.outputs)
+    layer2.forward(relu.output)
+    relu.activate(layer2.outputs)
 
-    #layer3.forward(relu.output)
-    #relu.activate(layer3.outputs)
+    layer3.forward(relu.output)
+    relu.activate(layer3.outputs)
 
-    #layer4.forward(relu.output)
+    layer4.forward(relu.output)
+    smcc.forward(layer4.outputs, y)
 
-    softmax_outputs = np.array([[0.7, 0.1, 0.2],
-                                [0.1, 0.5, 0.4],
-                                [0.02, 0.9, 0.08]])
+    print(smcc.loss)
 
-    class_targets = np.array([0, 1, 1])
-
-    smcc.backward(softmax_outputs, class_targets)
-    print(smcc.dinputs)
-
-    softmax.outputs = softmax_outputs
-    loss.backward(softmax_outputs, class_targets)
-    softmax.backward(loss.dinputs)
-    print(softmax.dinputs)
 
 if __name__ == "__main__":
     main()
